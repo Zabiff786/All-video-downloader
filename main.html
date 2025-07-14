@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidGrabber - Multi-Platform Video Downloader</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="/">VidGrabber</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="policy.html">Policy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h2>Download Videos from Any Social Media</h2>
+            <p>Paste your video URL below and get started instantly.</p>
+            <div class="search-box">
+                <input type="text" id="videoUrlInput" placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                <button id="downloadButton">Download</button>
+            </div>
+            <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </section>
+
+        <section id="downloadOptions" class="download-options" style="display: none;">
+            <h3>Video Details & Formats</h3>
+            <div class="video-preview">
+                <img id="videoThumbnail" src="" alt="Video Thumbnail">
+                <p id="videoTitle"></p>
+            </div>
+            <div class="format-list">
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 VidGrabber. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="about.html">About Us</a> |
+                <a href="policy.html">Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
