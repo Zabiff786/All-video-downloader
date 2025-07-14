@@ -1,138 +1,155 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const videoUrlInput = document.getElementById('videoUrlInput');
-    const downloadButton = document.getElementById('downloadButton');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const errorMessage = document.getElementById('errorMessage');
-    const downloadOptionsSection = document.getElementById('downloadOptions');
-    const videoThumbnail = document.getElementById('videoThumbnail');
+    const downloadForm = document.getElementById('downloadForm');
+    const videoUrlInput = document.getElementById('videoUrl');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const btnText = document.querySelector('.btn-text');
+    const loader = document.querySelector('.loader');
+    const resultDiv = document.getElementById('result');
+    const errorDiv = document.getElementById('error');
+    const thumbnailImg = document.getElementById('thumbnail');
     const videoTitle = document.getElementById('videoTitle');
-    const formatList = document.querySelector('.format-list');
+    const downloadLinksDiv = document.getElementById('downloadLinks');
 
-    downloadButton.addEventListener('click', async () => {
+    downloadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         const videoUrl = videoUrlInput.value.trim();
-        if (!videoUrl) {
-            displayMessage('Please enter a video URL.', 'error');
+
+        // Simple URL validation. For more robust validation, a library might be used. [11, 13]
+        if (!isValidUrl(videoUrl)) {
+            showError('Please enter a valid video URL.');
             return;
         }
 
-        resetUI();
-        showLoading(true);
+        // Show loader and disable button
+        setLoading(true);
+        hideError();
+        resultDiv.style.display = 'none';
 
         try {
-            // In a real application, this would be an API call to your backend
-            // Example: const response = await fetch('/api/get_video_info', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ url: videoUrl })
-            // });
-            // const data = await response.json();
-
-            // Mock data for demonstration
-            const mockData = await simulateBackendResponse(videoUrl);
-
-            if (mockData.error) {
-                displayMessage(mockData.error, 'error');
-                return;
+            // !!! IMPORTANT !!!
+            // Replace this placeholder URL with a real, working video downloader API endpoint.
+            // You can find various APIs online, both free and paid.
+            const apiEndpoint = `https://api.example-downloader.com/video?url=${encodeURIComponent(videoUrl)}`;
+            
+            // This is a mock fetch call. In a real scenario, this would fetch from a live API.
+            const response = await mockFetch(apiEndpoint, videoUrl);
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Could not fetch video information.');
             }
 
-            videoThumbnail.src = mockData.thumbnail;
-            videoTitle.textContent = mockData.title;
-            formatList.innerHTML = ''; // Clear previous formats
+            const data = await response.json();
+            displayResults(data);
 
-            mockData.formats.forEach(format => {
-                const formatItem = document.createElement('div');
-                formatItem.classList.add('format-item');
-                formatItem.innerHTML = `
-                    <p>Format: <strong>${format.format}</strong></p>
-                    <p>Quality: ${format.quality}</p>
-                    <p>Size: ${format.size}</p>
-                    <button data-url="${mockData.download_base_url}?format_id=${format.id}">Download ${format.quality}</button>
-                `;
-                formatList.appendChild(formatItem);
-            });
-
-            downloadOptionsSection.style.display = 'block';
-
-        } catch (error) {
-            console.error('Error:', error);
-            displayMessage('An unexpected error occurred. Please try again.', 'error');
+        } catch (err) {
+            showError(err.message || 'An unexpected error occurred.');
         } finally {
-            showLoading(false);
+            // Hide loader and enable button
+            setLoading(false);
         }
     });
-
-    // Event delegation for download buttons within the format list
-    formatList.addEventListener('click', (event) => {
-        if (event.target.tagName === 'BUTTON' && event.target.hasAttribute('data-url')) {
-            const downloadLink = event.target.getAttribute('data-url');
-            // In a real application, you might redirect or trigger a file download
-            // For security and backend control, the actual download should happen via backend
-            window.open(downloadLink, '_blank'); // Opens in a new tab/window
-            displayMessage('Your download should start shortly!', 'success');
+    
+    /**
+     * Toggles the loading state of the download button.
+     * @param {boolean} isLoading - Whether to show the loader.
+     */
+    function setLoading(isLoading) {
+        if (isLoading) {
+            btnText.style.display = 'none';
+            loader.style.display = 'block';
+            downloadBtn.disabled = true;
+        } else {
+            btnText.style.display = 'block';
+            loader.style.display = 'none';
+            downloadBtn.disabled = false;
         }
-    });
-
-    function showLoading(isLoading) {
-        loadingSpinner.style.display = isLoading ? 'block' : 'none';
-        downloadButton.disabled = isLoading;
-        videoUrlInput.disabled = isLoading;
     }
 
-    function displayMessage(message, type) {
-        errorMessage.textContent = message;
-        errorMessage.className = `error-message ${type === 'success' ? 'success-message' : 'error-message'}`;
-        errorMessage.style.display = 'block';
-        setTimeout(() => {
-            errorMessage.style.display = 'none';
-        }, 5000); // Hide after 5 seconds
+    /**
+     * Displays the video information and download links.
+     * @param {object} data - The data object from the API.
+     */
+    function displayResults(data) {
+        thumbnailImg.src = data.thumbnail;
+        videoTitle.textContent = data.title;
+        downloadLinksDiv.innerHTML = ''; // Clear previous links
+
+        if (data.formats && data.formats.length > 0) {
+            data.formats.forEach(format => {
+                const link = document.createElement('a');
+                link.href = format.url;
+                link.textContent = `${format.quality} (${format.format.toUpperCase()})`;
+                link.className = 'download-link';
+                link.target = '_blank'; // Open in new tab
+                link.download = ''; // Suggests to browser to download
+                downloadLinksDiv.appendChild(link);
+            });
+        }
+
+        resultDiv.style.display = 'block';
     }
 
-    function resetUI() {
-        errorMessage.style.display = 'none';
-        downloadOptionsSection.style.display = 'none';
-        videoThumbnail.src = '';
-        videoTitle.textContent = '';
-        formatList.innerHTML = '';
+    /**
+     * Displays an error message.
+     * @param {string} message - The error message to display.
+     */
+    function showError(message) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
     }
 
-    // Simulate backend response for demonstration
-    async function simulateBackendResponse(url) {
-        return new Promise(resolve => {
+    /**
+     * Hides the error message.
+     */
+    function hideError() {
+        errorDiv.style.display = 'none';
+    }
+    
+    /**
+     * Validates a URL string.
+     * @param {string} string - The URL to validate.
+     * @returns {boolean} - True if the URL is valid, false otherwise.
+     */
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+    
+    /**
+     * MOCK FETCH FUNCTION
+     * This function simulates an API call for demonstration purposes.
+     * Replace this with a real `fetch` call to your chosen API.
+     * @param {string} endpoint - The API endpoint.
+     * @param {string} videoUrl - The user-provided video URL.
+     * @returns {Promise} - A promise that resolves with a mock response.
+     */
+    function mockFetch(endpoint, videoUrl) {
+        console.log(`Mock fetching from: ${endpoint}`);
+        return new Promise((resolve, reject) => {
             setTimeout(() => {
-                if (url.includes('youtube.com')) {
+                // Simulate a successful response for a known "magic" URL
+                if (videoUrl.includes("youtube.com")) {
                     resolve({
-                        thumbnail: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg',
-                        title: 'Rick Astley - Never Gonna Give You Up (Official Music Video)',
-                        formats: [
-                            { id: '137', format: 'mp4', quality: '1080p', size: '20MB' },
-                            { id: '136', format: 'mp4', quality: '720p', size: '10MB' },
-                            { id: '18', format: 'mp4', quality: '360p', size: '5MB' },
-                            { id: '251', format: 'webm', quality: 'audio only', size: '2MB' }
-                        ],
-                        download_base_url: '/api/download_video'
-                    });
-                } else if (url.includes('tiktok.com')) {
-                    resolve({
-                        thumbnail: 'https://p16-sign-va.tiktokcdn.com/obj/tos-maliva-avt-0068/3b67e7c805a8d9a2a9d8d6d8f5d8f6d8~c5_720x720.jpeg',
-                        title: 'Funny TikTok Dance Compilation',
-                        formats: [
-                            { id: 'tiktok_hd', format: 'mp4', quality: 'HD', size: '15MB' },
-                            { id: 'tiktok_sd', format: 'mp4', quality: 'SD', size: '8MB' }
-                        ],
-                        download_base_url: '/api/download_video'
-                    });
-                } else if (url.includes('instagram.com')) {
-                     resolve({
-                        thumbnail: 'https://instagram.fgoi1-2.fna.fbcdn.net/v/t51.2885-15/e35/123456789_123456789_123456789_n.jpg?_nc_ht=instagram.fgoi1-2.fna.fbcdn.net&_nc_cat=1&_nc_ohc=abcdefg&ccb=7-5&oh=0123456789abcdef&oe=123456789&_nc_sid=abcdef',
-                        title: 'Beautiful Instagram Reel',
-                        formats: [
-                            { id: 'instagram_1080p', format: 'mp4', quality: '1080p', size: '12MB' },
-                            { id: 'instagram_720p', format: 'mp4', quality: '720p', size: '7MB' }
-                        ],
-                        download_base_url: '/api/download_video'
+                        ok: true,
+                        json: () => Promise.resolve({
+                            title: "Sample Video Title From YouTube",
+                            thumbnail: "https://via.placeholder.com/150/771796/FFFFFF?Text=Video+Thumbnail",
+                            formats: [
+                                { quality: '1080p', format: 'mp4', url: '#' },
+                                { quality: '720p', format: 'mp4', url: '#' },
+                                { quality: '480p', format: 'mp4', url: '#' },
+                                { quality: 'Audio', format: 'mp3', url: '#' }
+                            ]
+                        })
                     });
                 } else {
-                    resolve({ error: 'Unsupported URL or video not found.' });
+                    // Simulate an error response
+                    reject(new Error("This is a mock error. Use a real API for functionality."));
                 }
             }, 1500); // Simulate network delay
         });
