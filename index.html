@@ -53,6 +53,7 @@
             box-sizing: border-box;
             text-align: center;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         /* Header section */
@@ -114,6 +115,8 @@
         #download-button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+            transform: translateY(0);
+            box-shadow: none;
         }
 
         /* Loader animation inside the button */
@@ -170,6 +173,7 @@
             object-fit: cover;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
         
         #video-details h3 {
@@ -202,11 +206,12 @@
             text-decoration: none;
             border-radius: 8px;
             font-weight: 500;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         .download-link:hover {
             background-color: var(--primary-color);
+            transform: scale(1.05);
         }
         
         /* Responsive design */
@@ -242,12 +247,12 @@
     <div class="downloader-container">
         <header class="downloader-header">
             <h1>Video Downloader</h1>
-            <p>Paste a video link from a supported platform to download.</p>
+            <p>Paste any video link to see the downloader in action.</p>
         </header>
 
         <main>
             <form id="download-form">
-                <input type="text" id="video-url-input" placeholder="https://www.youtube.com/watch?v=..." required>
+                <input type="text" id="video-url-input" placeholder="https://www.example.com/video/..." required>
                 <button type="submit" id="download-button">
                     <span id="button-text">Download</span>
                     <div class="loader" id="loader" style="display: none;"></div>
@@ -262,7 +267,7 @@
     <script>
     /*
     ======================================
-    JavaScript for the Downloader Logic
+    JavaScript for the Downloader Logic (Updated)
     ======================================
     */
     document.addEventListener('DOMContentLoaded', () => {
@@ -276,7 +281,6 @@
 
         /**
          * Handles the form submission event.
-         * @param {Event} e - The form submission event.
          */
         downloadForm.addEventListener('submit', async (e) => {
             e.preventDefault(); // Prevent the form from reloading the page
@@ -294,10 +298,8 @@
 
             try {
                 // 3. --- IMPORTANT API CALL ---
-                // This is where you call the third-party video downloader API.
-                // Replace the mockFetch function call with a real `fetch` to your API endpoint.
-                // Example: const response = await fetch(`https://api.yourdownloader.com/fetch?url=${encodeURIComponent(videoUrl)}`);
-                
+                // This mock call is updated to always succeed for the demo.
+                // For real functionality, this must be replaced with a real API call.
                 const data = await mockApiCall(videoUrl);
 
                 // 4. Display the results
@@ -314,7 +316,6 @@
 
         /**
          * Toggles the loading state of the download button.
-         * @param {boolean} isLoading - True to show loader, false to show text.
          */
         function setLoading(isLoading) {
             downloadButton.disabled = isLoading;
@@ -329,8 +330,6 @@
 
         /**
          * Displays a message (error or info) to the user.
-         * @param {string} text - The message text to display.
-         * @param {string} type - The type of message ('error' or 'info').
          */
         function displayMessage(text, type) {
             messageArea.innerHTML = `<div class="message ${type}">${text}</div>`;
@@ -338,10 +337,8 @@
         
         /**
          * Displays the video information and download links.
-         * @param {object} data - The data object returned from the API.
          */
         function displayResults(data) {
-            // Check if API returned valid data structure
             if (!data.title || !data.thumbnail || !data.formats) {
                  displayMessage('Could not retrieve video data. The URL may be unsupported.', 'error');
                  return;
@@ -370,14 +367,11 @@
 
         /**
          * A simple URL validator.
-         * @param {string} urlString - The string to validate.
-         * @returns {boolean} - True if the string is a plausible URL.
          */
         function isValidUrl(urlString) {
             try {
-                // Use the URL constructor to check for validity.
                 const url = new URL(urlString);
-                // Check for http or https protocols.
+                // Check for common web protocols.
                 return url.protocol === 'http:' || url.protocol === 'https:';
             } catch (_) {
                 return false;
@@ -386,33 +380,28 @@
 
         /**
          * =========================================================================
-         * MOCK API CALL - FOR DEMONSTRATION ONLY
-         * Replace this entire function with a real `fetch` call to your chosen API.
+         * MOCK API CALL - UPDATED TO ALWAYS SUCCEED FOR DEMONSTRATION
          * =========================================================================
-         * This function simulates fetching data from a server.
-         * @param {string} url - The video URL provided by the user.
-         * @returns {Promise<object>} - A promise that resolves with mock video data or rejects with an error.
+         * This function simulates fetching data from a server. It now resolves
+         * successfully for ANY valid URL to allow for better UI testing.
+         * For real functionality, replace this with a `fetch` call to a live API.
          */
         function mockApiCall(url) {
             console.log("Simulating API call for:", url);
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 setTimeout(() => {
-                    // Simulate a successful response for any URL containing "youtube.com"
-                    if (url.includes("youtube.com")) {
-                        resolve({
-                            title: "Example YouTube Video Title - Your Content Here",
-                            thumbnail: "https://via.placeholder.com/160x90.png?text=Video+Thumbnail",
-                            formats: [
-                                { quality: '1080p', ext: 'mp4', url: '#' },
-                                { quality: '720p', ext: 'mp4', url: '#' },
-                                { quality: '480p', ext: 'mp4', url: '#' },
-                                { quality: 'Audio', ext: 'mp3', url: '#' }
-                            ]
-                        });
-                    } else {
-                        // Simulate an error for any other URL
-                        reject(new Error("This video platform is not supported. (This is a demo error)"));
-                    }
+                    // **THE FIX IS HERE**: The function no longer checks for a specific
+                    // platform. It always returns a successful mock response.
+                    resolve({
+                        title: "Video Title From Your Link",
+                        thumbnail: "https://via.placeholder.com/160x90.png?text=Video+Thumbnail",
+                        formats: [
+                            { quality: '1080p', ext: 'mp4', url: '#' },
+                            { quality: '720p', ext: 'mp4', url: '#' },
+                            { quality: '480p', ext: 'mp4', url: '#' },
+                            { quality: 'Audio', ext: 'mp3', url: '#' }
+                        ]
+                    });
                 }, 1500); // Simulate a 1.5-second network delay
             });
         }
