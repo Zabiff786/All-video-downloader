@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stylish Video Downloader Tool</title>
+    <title>Functional Video Downloader Tool</title>
     <!-- Google Fonts for a modern look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,16 +15,15 @@
         CSS Styles for the Downloader
         =================================
         */
-
         :root {
-            --primary-color: #6a11cb;
-            --secondary-color: #2575fc;
-            --accent-color: #ff512f;
-            --accent-color-hover: #dd2476;
-            --bg-color: #f0f2f5;
-            --card-bg-color: rgba(255, 255, 255, 0.95);
-            --text-color: #333;
-            --light-text-color: #777;
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --accent-color: #28a745;
+            --accent-color-hover: #218838;
+            --bg-color: #f4f7f6;
+            --card-bg-color: #ffffff;
+            --text-color: #343a40;
+            --light-text-color: #6c757d;
             --border-radius: 12px;
             --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
@@ -32,7 +31,6 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-color);
-            background-image: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             margin: 0;
             padding: 2rem 1rem;
             color: var(--text-color);
@@ -52,8 +50,6 @@
             padding: 2.5rem;
             box-sizing: border-box;
             text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         /* Header section */
@@ -88,7 +84,7 @@
         #video-url-input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.25);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
         }
 
         #download-button {
@@ -99,7 +95,7 @@
             font-size: 1rem;
             font-weight: 600;
             color: #fff;
-            background-image: linear-gradient(to right, var(--accent-color) 0%, var(--accent-color-hover) 100%);
+            background-color: var(--accent-color);
             border: none;
             border-radius: var(--border-radius);
             cursor: pointer;
@@ -108,15 +104,14 @@
         }
 
         #download-button:hover {
+            background-color: var(--accent-color-hover);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(221, 36, 118, 0.4);
         }
         
         #download-button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
             transform: translateY(0);
-            box-shadow: none;
         }
 
         /* Loader animation inside the button */
@@ -133,11 +128,11 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Results and messages section */
+        /* Message and results area */
         #message-area {
             margin-top: 1.5rem;
             text-align: left;
-            animation: fadeIn 0.5s ease;
+            animation: fadeIn 0.5s ease-in-out;
         }
         
         @keyframes fadeIn {
@@ -149,46 +144,19 @@
             padding: 1rem;
             border-radius: var(--border-radius);
             margin-bottom: 1rem;
+            border: 1px solid transparent;
         }
 
         .message.error {
             background-color: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
+            border-color: #f5c6cb;
         }
 
-        /* Video result display */
-        #video-info {
-            display: flex;
-            gap: 1.5rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: var(--border-radius);
-            border: 1px solid #e9ecef;
-        }
-
-        #video-thumbnail {
-            width: 160px;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-        }
-        
-        #video-details h3 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        /* Download links section */
-        #download-options h4 {
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary-color);
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
         }
 
         #download-links {
@@ -200,7 +168,7 @@
         .download-link {
             display: block;
             padding: 0.75rem;
-            background-color: var(--secondary-color);
+            background-color: var(--primary-color);
             color: #fff;
             text-align: center;
             text-decoration: none;
@@ -210,56 +178,35 @@
         }
 
         .download-link:hover {
-            background-color: var(--primary-color);
+            background-color: #0056b3;
             transform: scale(1.05);
         }
         
         /* Responsive design */
         @media (max-width: 600px) {
-            .downloader-container {
-                padding: 1.5rem;
-            }
-
-            #download-form {
-                flex-direction: column;
-            }
-
-            #video-url-input {
-                height: 50px;
-            }
-            
-            #video-info {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
+            .downloader-container { padding: 1.5rem; }
+            #download-form { flex-direction: column; }
+            #video-url-input { height: 50px; }
         }
-        
     </style>
 </head>
 <body>
 
-    <!-- 
-    ===============================
-    HTML Structure for the Downloader
-    ===============================
-    -->
     <div class="downloader-container">
         <header class="downloader-header">
             <h1>Video Downloader</h1>
-            <p>Paste any video link to see the downloader in action.</p>
+            <p>Paste a <strong>direct link</strong> to a video file (.mp4, .webm) to download it.</p>
         </header>
 
         <main>
             <form id="download-form">
-                <input type="text" id="video-url-input" placeholder="https://www.example.com/video/..." required>
+                <input type="text" id="video-url-input" placeholder="e.g., https://example.com/myvideo.mp4" required>
                 <button type="submit" id="download-button">
                     <span id="button-text">Download</span>
                     <div class="loader" id="loader" style="display: none;"></div>
                 </button>
             </form>
             
-            <!-- This area will display errors or the final download options -->
             <div id="message-area"></div>
         </main>
     </div>
@@ -267,11 +214,10 @@
     <script>
     /*
     ======================================
-    JavaScript for the Downloader Logic (Updated)
+    JavaScript Logic (Updated and Functional)
     ======================================
     */
     document.addEventListener('DOMContentLoaded', () => {
-        // --- DOM Element References ---
         const downloadForm = document.getElementById('download-form');
         const urlInput = document.getElementById('video-url-input');
         const downloadButton = document.getElementById('download-button');
@@ -280,130 +226,127 @@
         const messageArea = document.getElementById('message-area');
 
         /**
-         * Handles the form submission event.
+         * Main form submission handler
          */
-        downloadForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Prevent the form from reloading the page
+        downloadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
             const videoUrl = urlInput.value.trim();
 
-            // 1. Validate the URL
             if (!isValidUrl(videoUrl)) {
-                displayMessage('Please enter a valid video URL.', 'error');
+                displayMessage('Please enter a valid URL.', 'error');
                 return;
             }
 
-            // 2. Set UI to loading state
-            setLoading(true);
-            messageArea.innerHTML = ''; // Clear previous messages/results
-
-            try {
-                // 3. --- IMPORTANT API CALL ---
-                // This mock call is updated to always succeed for the demo.
-                // For real functionality, this must be replaced with a real API call.
-                const data = await mockApiCall(videoUrl);
-
-                // 4. Display the results
-                displayResults(data);
-
-            } catch (error) {
-                // 5. Display an error if the API call fails
-                displayMessage(error.message, 'error');
-            } finally {
-                // 6. Reset UI from loading state
-                setLoading(false);
+            // Check if it's a direct video link for a real download
+            if (isDirectVideoLink(videoUrl)) {
+                handleDirectDownload(videoUrl);
+            } else {
+                // If not a direct link, show the visual demo for platforms like YouTube
+                simulatePlatformDownload();
             }
         });
 
         /**
-         * Toggles the loading state of the download button.
+         * --- REAL DOWNLOAD FUNCTION ---
+         * This function handles the download of direct video links.
+         * It fetches the video as a blob and creates a temporary download link.
+         * @param {string} url - The direct URL to the video file.
          */
-        function setLoading(isLoading) {
-            downloadButton.disabled = isLoading;
-            if (isLoading) {
-                buttonText.style.display = 'none';
-                loader.style.display = 'block';
-            } else {
-                buttonText.style.display = 'block';
-                loader.style.display = 'none';
+        async function handleDirectDownload(url) {
+            setLoading(true);
+            displayMessage('Starting download... Please wait.', 'success');
+            try {
+                // Fetch the video file. The 'cors' mode is important.
+                const response = await fetch(url, { mode: 'cors' });
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                // Create a temporary link element to trigger the download
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = blobUrl;
+                a.download = getFileNameFromUrl(url); // Set the filename
+                document.body.appendChild(a);
+                a.click();
+                
+                // Clean up the temporary URL and link
+                window.URL.revokeObjectURL(blobUrl);
+                a.remove();
+                
+                displayMessage('Download has started successfully!', 'success');
+
+            } catch (error) {
+                console.error('Download failed:', error);
+                displayMessage('Download failed. The server may be blocking direct access (CORS policy).', 'error');
+            } finally {
+                setLoading(false);
             }
         }
 
         /**
-         * Displays a message (error or info) to the user.
+         * --- VISUAL DEMO FUNCTION ---
+         * This simulates the UI for platforms that require a backend API.
          */
+        function simulatePlatformDownload() {
+            setLoading(true);
+            messageArea.innerHTML = '';
+            
+            setTimeout(() => {
+                const demoData = {
+                    title: "Demo: Video from Platform URL",
+                    formats: [
+                        { quality: '1080p (Demo)', url: '#' },
+                        { quality: '720p (Demo)', url: '#' },
+                        { quality: 'Audio (Demo)', url: '#' }
+                    ]
+                };
+                
+                const linksHtml = demoData.formats.map(format => 
+                    `<a href="#" class="download-link" onclick="alert('This is a visual demo. A real API is needed for this link to work.'); return false;">${format.quality}</a>`
+                ).join('');
+
+                messageArea.innerHTML = `
+                    <div class="message success">
+                        <strong>This is a Visual Demonstration.</strong><br>
+                        Downloading from this platform requires a server. The links below are for UI demonstration only.
+                    </div>
+                    <div id="download-links">${linksHtml}</div>
+                `;
+                setLoading(false);
+            }, 1500);
+        }
+
+        // --- Helper Functions ---
+
+        function setLoading(isLoading) {
+            downloadButton.disabled = isLoading;
+            loader.style.display = isLoading ? 'block' : 'none';
+            buttonText.style.display = isLoading ? 'none' : 'block';
+        }
+
         function displayMessage(text, type) {
             messageArea.innerHTML = `<div class="message ${type}">${text}</div>`;
         }
         
-        /**
-         * Displays the video information and download links.
-         */
-        function displayResults(data) {
-            if (!data.title || !data.thumbnail || !data.formats) {
-                 displayMessage('Could not retrieve video data. The URL may be unsupported.', 'error');
-                 return;
-            }
-
-            const resultsHtml = `
-                <div id="video-info">
-                    <img id="video-thumbnail" src="${data.thumbnail}" alt="Video Thumbnail">
-                    <div id="video-details">
-                        <h3>${data.title}</h3>
-                    </div>
-                </div>
-                <div id="download-options">
-                    <h4>Available Formats:</h4>
-                    <div id="download-links">
-                        ${data.formats.map(format => `
-                            <a href="${format.url}" class="download-link" target="_blank" download>
-                                ${format.quality} <small>(${format.ext})</small>
-                            </a>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-            messageArea.innerHTML = resultsHtml;
+        function isDirectVideoLink(url) {
+            return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
         }
 
-        /**
-         * A simple URL validator.
-         */
+        function getFileNameFromUrl(url) {
+            return url.substring(url.lastIndexOf('/') + 1);
+        }
+
         function isValidUrl(urlString) {
             try {
-                const url = new URL(urlString);
-                // Check for common web protocols.
-                return url.protocol === 'http:' || url.protocol === 'https:';
+                new URL(urlString);
+                return true;
             } catch (_) {
                 return false;
             }
-        }
-
-        /**
-         * =========================================================================
-         * MOCK API CALL - UPDATED TO ALWAYS SUCCEED FOR DEMONSTRATION
-         * =========================================================================
-         * This function simulates fetching data from a server. It now resolves
-         * successfully for ANY valid URL to allow for better UI testing.
-         * For real functionality, replace this with a `fetch` call to a live API.
-         */
-        function mockApiCall(url) {
-            console.log("Simulating API call for:", url);
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    // **THE FIX IS HERE**: The function no longer checks for a specific
-                    // platform. It always returns a successful mock response.
-                    resolve({
-                        title: "Video Title From Your Link",
-                        thumbnail: "https://via.placeholder.com/160x90.png?text=Video+Thumbnail",
-                        formats: [
-                            { quality: '1080p', ext: 'mp4', url: '#' },
-                            { quality: '720p', ext: 'mp4', url: '#' },
-                            { quality: '480p', ext: 'mp4', url: '#' },
-                            { quality: 'Audio', ext: 'mp3', url: '#' }
-                        ]
-                    });
-                }, 1500); // Simulate a 1.5-second network delay
-            });
         }
     });
     </script>
