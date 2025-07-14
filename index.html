@@ -3,57 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VidGrabber - Multi-Platform Video Downloader</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Stylish Video Downloader Tool</title>
+    <!-- Google Fonts for a modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /*
+        =================================
+        CSS Styles for the Downloader
+        =================================
+        */
+
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --accent-color: #ff512f;
+            --accent-color-hover: #dd2476;
+            --bg-color: #f0f2f5;
+            --card-bg-color: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --light-text-color: #777;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            background-image: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            margin: 0;
+            padding: 2rem 1rem;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* Main container for the tool */
+        .downloader-container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2.5rem;
+            box-sizing: border-box;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Header section */
+        .downloader-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .downloader-header p {
+            margin: 0 0 2rem 0;
+            font-size: 1.1rem;
+            color: var(--light-text-color);
+        }
+
+        /* Form styling */
+        #download-form {
+            display: flex;
+            gap: 1rem;
+        }
+
+        #video-url-input {
+            flex-grow: 1;
+            padding: 0 1rem;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+        
+        #video-url-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.25);
+        }
+
+        #download-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            background-image: linear-gradient(to right, var(--accent-color) 0%, var(--accent-color-hover) 100%);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px; /* Fixed width to prevent size change */
+        }
+
+        #download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(221, 36, 118, 0.4);
+        }
+        
+        #download-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Loader animation inside the button */
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Results and messages section */
+        #message-area {
+            margin-top: 1.5rem;
+            text-align: left;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Video result display */
+        #video-info {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            border: 1px solid #e9ecef;
+        }
+
+        #video-thumbnail {
+            width: 160px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #video-details h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Download links section */
+        #download-options h4 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        #download-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .download-link {
+            display: block;
+            padding: 0.75rem;
+            background-color: var(--secondary-color);
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-link:hover {
+            background-color: var(--primary-color);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .downloader-container {
+                padding: 1.5rem;
+            }
+
+            #download-form {
+                flex-direction: column;
+            }
+
+            #video-url-input {
+                height: 50px;
+            }
+            
+            #video-info {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+        
+    </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1 class="logo"><a href="/">VidGrabber</a></h1>
-            <nav>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="about.html">About Us</a></li>
-                    <li><a href="policy.html">Policy</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
 
-    <main class="container">
-        <section class="hero">
-            <h2>Download Videos from Any Social Media</h2>
-            <p>Paste your video URL below and get started instantly.</p>
-            <div class="search-box">
-                <input type="text" id="videoUrlInput" placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ">
-                <button id="downloadButton">Download</button>
-            </div>
-            <div id="loadingSpinner" class="spinner" style="display: none;"></div>
-            <div id="errorMessage" class="error-message" style="display: none;"></div>
-        </section>
+    <!-- 
+    ===============================
+    HTML Structure for the Downloader
+    ===============================
+    -->
+    <div class="downloader-container">
+        <header class="downloader-header">
+            <h1>Video Downloader</h1>
+            <p>Paste a video link from a supported platform to download.</p>
+        </header>
 
-        <section id="downloadOptions" class="download-options" style="display: none;">
-            <h3>Video Details & Formats</h3>
-            <div class="video-preview">
-                <img id="videoThumbnail" src="" alt="Video Thumbnail">
-                <p id="videoTitle"></p>
-            </div>
-            <div class="format-list">
+        <main>
+            <form id="download-form">
+                <input type="text" id="video-url-input" placeholder="https://www.youtube.com/watch?v=..." required>
+                <button type="submit" id="download-button">
+                    <span id="button-text">Download</span>
+                    <div class="loader" id="loader" style="display: none;"></div>
+                </button>
+            </form>
+            
+            <!-- This area will display errors or the final download options -->
+            <div id="message-area"></div>
+        </main>
+    </div>
+
+    <script>
+    /*
+    ======================================
+    JavaScript for the Downloader Logic
+    ======================================
+    */
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM Element References ---
+        const downloadForm = document.getElementById('download-form');
+        const urlInput = document.getElementById('video-url-input');
+        const downloadButton = document.getElementById('download-button');
+        const buttonText = document.getElementById('button-text');
+        const loader = document.getElementById('loader');
+        const messageArea = document.getElementById('message-area');
+
+        /**
+         * Handles the form submission event.
+         * @param {Event} e - The form submission event.
+         */
+        downloadForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent the form from reloading the page
+            const videoUrl = urlInput.value.trim();
+
+            // 1. Validate the URL
+            if (!isValidUrl(videoUrl)) {
+                displayMessage('Please enter a valid video URL.', 'error');
+                return;
+            }
+
+            // 2. Set UI to loading state
+            setLoading(true);
+            messageArea.innerHTML = ''; // Clear previous messages/results
+
+            try {
+                // 3. --- IMPORTANT API CALL ---
+                // This is where you call the third-party video downloader API.
+                // Replace the mockFetch function call with a real `fetch` to your API endpoint.
+                // Example: const response = await fetch(`https://api.yourdownloader.com/fetch?url=${encodeURIComponent(videoUrl)}`);
+                
+                const data = await mockApiCall(videoUrl);
+
+                // 4. Display the results
+                displayResults(data);
+
+            } catch (error) {
+                // 5. Display an error if the API call fails
+                displayMessage(error.message, 'error');
+            } finally {
+                // 6. Reset UI from loading state
+                setLoading(false);
+            }
+        });
+
+        /**
+         * Toggles the loading state of the download button.
+         * @param {boolean} isLoading - True to show loader, false to show text.
+         */
+        function setLoading(isLoading) {
+            downloadButton.disabled = isLoading;
+            if (isLoading) {
+                buttonText.style.display = 'none';
+                loader.style.display = 'block';
+            } else {
+                buttonText.style.display = 'block';
+                loader.style.display = 'none';
+            }
+        }
+
+        /**
+         * Displays a message (error or info) to the user.
+         * @param {string} text - The message text to display.
+         * @param {string} type - The type of message ('error' or 'info').
+         */
+        function displayMessage(text, type) {
+            messageArea.innerHTML = `<div class="message ${type}">${text}</div>`;
+        }
+        
+        /**
+         * Displays the video information and download links.
+         * @param {object} data - The data object returned from the API.
+         */
+        function displayResults(data) {
+            // Check if API returned valid data structure
+            if (!data.title || !data.thumbnail || !data.formats) {
+                 displayMessage('Could not retrieve video data. The URL may be unsupported.', 'error');
+                 return;
+            }
+
+            const resultsHtml = `
+                <div id="video-info">
+                    <img id="video-thumbnail" src="${data.thumbnail}" alt="Video Thumbnail">
+                    <div id="video-details">
+                        <h3>${data.title}</h3>
+                    </div>
                 </div>
-        </section>
-    </main>
+                <div id="download-options">
+                    <h4>Available Formats:</h4>
+                    <div id="download-links">
+                        ${data.formats.map(format => `
+                            <a href="${format.url}" class="download-link" target="_blank" download>
+                                ${format.quality} <small>(${format.ext})</small>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            messageArea.innerHTML = resultsHtml;
+        }
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 VidGrabber. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="about.html">About Us</a> |
-                <a href="policy.html">Policy</a>
-            </div>
-        </div>
-    </footer>
+        /**
+         * A simple URL validator.
+         * @param {string} urlString - The string to validate.
+         * @returns {boolean} - True if the string is a plausible URL.
+         */
+        function isValidUrl(urlString) {
+            try {
+                // Use the URL constructor to check for validity.
+                const url = new URL(urlString);
+                // Check for http or https protocols.
+                return url.protocol === 'http:' || url.protocol === 'https:';
+            } catch (_) {
+                return false;
+            }
+        }
 
-    <script src="script.js"></script>
+        /**
+         * =========================================================================
+         * MOCK API CALL - FOR DEMONSTRATION ONLY
+         * Replace this entire function with a real `fetch` call to your chosen API.
+         * =========================================================================
+         * This function simulates fetching data from a server.
+         * @param {string} url - The video URL provided by the user.
+         * @returns {Promise<object>} - A promise that resolves with mock video data or rejects with an error.
+         */
+        function mockApiCall(url) {
+            console.log("Simulating API call for:", url);
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulate a successful response for any URL containing "youtube.com"
+                    if (url.includes("youtube.com")) {
+                        resolve({
+                            title: "Example YouTube Video Title - Your Content Here",
+                            thumbnail: "https://via.placeholder.com/160x90.png?text=Video+Thumbnail",
+                            formats: [
+                                { quality: '1080p', ext: 'mp4', url: '#' },
+                                { quality: '720p', ext: 'mp4', url: '#' },
+                                { quality: '480p', ext: 'mp4', url: '#' },
+                                { quality: 'Audio', ext: 'mp3', url: '#' }
+                            ]
+                        });
+                    } else {
+                        // Simulate an error for any other URL
+                        reject(new Error("This video platform is not supported. (This is a demo error)"));
+                    }
+                }, 1500); // Simulate a 1.5-second network delay
+            });
+        }
+    });
+    </script>
 </body>
 </html>
