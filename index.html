@@ -3,221 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Functional Video Downloader Tool</title>
+    <title>Fully Functional Video Downloader</title>
     <!-- Google Fonts for a modern look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /*
-        =================================
-        CSS Styles for the Downloader
-        =================================
-        */
+        /* The CSS is already set up and does not need changes */
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #6c757d;
-            --accent-color: #28a745;
-            --accent-color-hover: #218838;
-            --bg-color: #f4f7f6;
+            --primary-color: #d32f2f; /* YouTube Red */
+            --secondary-color: #282828; /* Dark Gray */
+            --accent-color: #ff512f;
+            --accent-color-hover: #dd2476;
+            --bg-color: #f0f2f5;
             --card-bg-color: #ffffff;
-            --text-color: #343a40;
-            --light-text-color: #6c757d;
+            --text-color: #333;
+            --light-text-color: #777;
             --border-radius: 12px;
             --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-color);
-            margin: 0;
-            padding: 2rem 1rem;
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            margin: 0; padding: 2rem 1rem;
+            display: flex; justify-content: center; align-items: flex-start;
             min-height: 100vh;
         }
-
-        /* Main container for the tool */
         .downloader-container {
-            width: 100%;
-            max-width: 700px;
+            width: 100%; max-width: 700px;
             background: var(--card-bg-color);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            padding: 2.5rem;
-            box-sizing: border-box;
-            text-align: center;
+            padding: 2.5rem; text-align: center;
         }
-
-        /* Header section */
-        .downloader-header h1 {
-            margin: 0 0 0.5rem 0;
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .downloader-header p {
-            margin: 0 0 2rem 0;
-            font-size: 1.1rem;
-            color: var(--light-text-color);
-        }
-
-        /* Form styling */
-        #download-form {
-            display: flex;
-            gap: 1rem;
-        }
-
-        #video-url-input {
-            flex-grow: 1;
-            padding: 0 1rem;
-            font-size: 1rem;
-            border: 2px solid #ddd;
-            border-radius: var(--border-radius);
-            transition: all 0.3s ease;
-        }
-        
-        #video-url-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-        }
-
-        #download-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.8rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #fff;
-            background-color: var(--accent-color);
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 150px; /* Fixed width to prevent size change */
-        }
-
-        #download-button:hover {
-            background-color: var(--accent-color-hover);
-            transform: translateY(-2px);
-        }
-        
-        #download-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: translateY(0);
-        }
-
-        /* Loader animation inside the button */
-        .loader {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Message and results area */
-        #message-area {
-            margin-top: 1.5rem;
-            text-align: left;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .message {
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-        }
-
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-color: #f5c6cb;
-        }
-
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border-color: #c3e6cb;
-        }
-
-        #download-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 0.75rem;
-        }
-
-        .download-link {
-            display: block;
-            padding: 0.75rem;
-            background-color: var(--primary-color);
-            color: #fff;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .download-link:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-        
-        /* Responsive design */
-        @media (max-width: 600px) {
-            .downloader-container { padding: 1.5rem; }
-            #download-form { flex-direction: column; }
-            #video-url-input { height: 50px; }
-        }
+        .downloader-header h1 { margin: 0 0 0.5rem 0; font-size: 2.25rem; font-weight: 700; color: var(--primary-color); }
+        .downloader-header p { margin: 0 0 2rem 0; font-size: 1.1rem; color: var(--light-text-color); }
+        #download-form { display: flex; gap: 1rem; }
+        #video-url-input { flex-grow: 1; padding: 0 1rem; font-size: 1rem; border: 2px solid #ddd; border-radius: var(--border-radius); transition: all 0.3s ease; }
+        #video-url-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.25); }
+        #download-button { display: flex; align-items: center; justify-content: center; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: 600; color: #fff; background-image: linear-gradient(to right, var(--accent-color) 0%, var(--accent-color-hover) 100%); border: none; border-radius: var(--border-radius); cursor: pointer; transition: all 0.3s ease; min-width: 150px; }
+        #download-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(221, 36, 118, 0.4); }
+        #download-button:disabled { opacity: 0.7; cursor: not-allowed; transform: translateY(0); box-shadow: none; }
+        .loader { width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.5); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #message-area { margin-top: 1.5rem; text-align: left; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message { padding: 1rem; border-radius: var(--border-radius); margin-bottom: 1rem; border: 1px solid transparent; }
+        .message.error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        #video-info { display: flex; flex-wrap: wrap; gap: 1.5rem; padding: 1.5rem; background: #f8f9fa; border-radius: var(--border-radius); border: 1px solid #e9ecef; }
+        #video-thumbnail { width: 160px; height: 90px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+        #video-details { flex: 1; min-width: 200px; }
+        #video-details h3 { margin: 0 0 0.5rem 0; font-size: 1.2rem; }
+        #download-options h4 { margin-top: 1.5rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--primary-color); }
+        #download-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; }
+        .download-link { display: block; padding: 0.75rem; background-color: var(--secondary-color); color: #fff; text-align: center; text-decoration: none; border-radius: 8px; font-weight: 500; transition: background-color 0.3s ease, transform 0.2s ease; }
+        .download-link:hover { background-color: var(--primary-color); transform: scale(1.05); }
+        @media (max-width: 600px) { .downloader-container { padding: 1.5rem; } #download-form { flex-direction: column; } #video-url-input { height: 50px; } #video-info { flex-direction: column; align-items: center; text-align: center; } }
     </style>
 </head>
 <body>
 
     <div class="downloader-container">
         <header class="downloader-header">
-            <h1>Video Downloader</h1>
-            <p>Paste a <strong>direct link</strong> to a video file (.mp4, .webm) to download it.</p>
+            <h1>YouTube Downloader</h1>
+            <p>Paste a YouTube video link to get download options.</p>
         </header>
-
         <main>
             <form id="download-form">
-                <input type="text" id="video-url-input" placeholder="e.g., https://example.com/myvideo.mp4" required>
+                <input type="text" id="video-url-input" placeholder="https://www.youtube.com/watch?v=..." required>
                 <button type="submit" id="download-button">
-                    <span id="button-text">Download</span>
+                    <span id="button-text">Get Links</span>
                     <div class="loader" id="loader" style="display: none;"></div>
                 </button>
             </form>
-            
             <div id="message-area"></div>
         </main>
     </div>
 
     <script>
-    /*
-    ======================================
-    JavaScript Logic (Updated and Functional)
-    ======================================
-    */
     document.addEventListener('DOMContentLoaded', () => {
+        
+        // --- API Configuration ---
+        // Your API key has been inserted here. The tool is ready to use.
+        const apiKey = '6f515ae38cmsh8e5cd660ce092f7p198078jsn2a66704fc510';
+        const apiHost = 'youtube-mp3-audio-video-downloader.p.rapidapi.com';
+
+        // --- DOM Element References ---
         const downloadForm = document.getElementById('download-form');
         const urlInput = document.getElementById('video-url-input');
         const downloadButton = document.getElementById('download-button');
@@ -228,100 +100,98 @@
         /**
          * Main form submission handler
          */
-        downloadForm.addEventListener('submit', (e) => {
+        downloadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const videoUrl = urlInput.value.trim();
 
-            if (!isValidUrl(videoUrl)) {
-                displayMessage('Please enter a valid URL.', 'error');
+            const videoId = getYoutubeVideoId(videoUrl);
+            if (!videoId) {
+                displayMessage('Please enter a valid YouTube URL.', 'error');
                 return;
             }
 
-            // Check if it's a direct video link for a real download
-            if (isDirectVideoLink(videoUrl)) {
-                handleDirectDownload(videoUrl);
-            } else {
-                // If not a direct link, show the visual demo for platforms like YouTube
-                simulatePlatformDownload();
+            setLoading(true);
+            messageArea.innerHTML = '';
+
+            try {
+                const data = await fetchFromApi(videoId);
+                displayResults(data);
+            } catch (error) {
+                displayMessage(error.message, 'error');
+            } finally {
+                setLoading(false);
             }
         });
 
         /**
-         * --- REAL DOWNLOAD FUNCTION ---
-         * This function handles the download of direct video links.
-         * It fetches the video as a blob and creates a temporary download link.
-         * @param {string} url - The direct URL to the video file.
+         * Fetches all video and audio formats from the API.
+         * @param {string} videoId - The 11-character ID of the YouTube video.
          */
-        async function handleDirectDownload(url) {
-            setLoading(true);
-            displayMessage('Starting download... Please wait.', 'success');
-            try {
-                // Fetch the video file. The 'cors' mode is important.
-                const response = await fetch(url, { mode: 'cors' });
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
+        async function fetchFromApi(videoId) {
+            const requestUrl = `https://youtube-mp3-audio-video-downloader.p.rapidapi.com/video-info/${videoId}`;
+            const options = {
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Key': apiKey,
+                    'X-RapidAPI-Host': apiHost
                 }
-                
-                const blob = await response.blob();
-                const blobUrl = window.URL.createObjectURL(blob);
-                
-                // Create a temporary link element to trigger the download
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = blobUrl;
-                a.download = getFileNameFromUrl(url); // Set the filename
-                document.body.appendChild(a);
-                a.click();
-                
-                // Clean up the temporary URL and link
-                window.URL.revokeObjectURL(blobUrl);
-                a.remove();
-                
-                displayMessage('Download has started successfully!', 'success');
+            };
 
-            } catch (error) {
-                console.error('Download failed:', error);
-                displayMessage('Download failed. The server may be blocking direct access (CORS policy).', 'error');
-            } finally {
-                setLoading(false);
+            const response = await fetch(requestUrl, options);
+            if (!response.ok) {
+                throw new Error('Failed to fetch video data. The video might be private, unavailable, or your daily API limit may be reached.');
             }
+            return await response.json();
         }
-
+        
         /**
-         * --- VISUAL DEMO FUNCTION ---
-         * This simulates the UI for platforms that require a backend API.
+         * Displays the results based on the API response structure.
+         * This is tailored for the 'youtube-mp3-audio-video-downloader' API.
+         * @param {object} data - The JSON data from the API.
          */
-        function simulatePlatformDownload() {
-            setLoading(true);
-            messageArea.innerHTML = '';
-            
-            setTimeout(() => {
-                const demoData = {
-                    title: "Demo: Video from Platform URL",
-                    formats: [
-                        { quality: '1080p (Demo)', url: '#' },
-                        { quality: '720p (Demo)', url: '#' },
-                        { quality: 'Audio (Demo)', url: '#' }
-                    ]
-                };
-                
-                const linksHtml = demoData.formats.map(format => 
-                    `<a href="#" class="download-link" onclick="alert('This is a visual demo. A real API is needed for this link to work.'); return false;">${format.quality}</a>`
-                ).join('');
+        function displayResults(data) {
+            if (!data.title || (!data.videos && !data.audios)) {
+                displayMessage('Could not find any downloadable formats for this video.', 'error');
+                return;
+            }
 
-                messageArea.innerHTML = `
-                    <div class="message success">
-                        <strong>This is a Visual Demonstration.</strong><br>
-                        Downloading from this platform requires a server. The links below are for UI demonstration only.
+            let linksHtml = '<h4>Video</h4>';
+            if (data.videos && data.videos.length > 0) {
+                linksHtml += data.videos.map(format => `
+                    <a href="${format.url}" class="download-link" target="_blank">
+                        ${format.label} <small>(MP4)</small>
+                    </a>
+                `).join('');
+            } else {
+                linksHtml += '<p>No video formats found.</p>';
+            }
+
+            linksHtml += '<h4 style="margin-top: 1.5rem;">Audio</h4>';
+            if (data.audios && data.audios.length > 0) {
+                linksHtml += data.audios.map(format => `
+                    <a href="${format.url}" class="download-link" target="_blank">
+                        ${format.label} <small>(MP3)</small>
+                    </a>
+                `).join('');
+            } else {
+                linksHtml += '<p>No audio formats found.</p>';
+            }
+
+            const resultsHtml = `
+                <div id="video-info">
+                    <img id="video-thumbnail" src="${data.thumbnail.url}" alt="Video Thumbnail">
+                    <div id="video-details">
+                        <h3>${data.title}</h3>
                     </div>
-                    <div id="download-links">${linksHtml}</div>
-                `;
-                setLoading(false);
-            }, 1500);
+                </div>
+                <div id="download-options">
+                    ${linksHtml}
+                </div>
+            `;
+            messageArea.innerHTML = resultsHtml;
         }
 
         // --- Helper Functions ---
-
         function setLoading(isLoading) {
             downloadButton.disabled = isLoading;
             loader.style.display = isLoading ? 'block' : 'none';
@@ -331,22 +201,16 @@
         function displayMessage(text, type) {
             messageArea.innerHTML = `<div class="message ${type}">${text}</div>`;
         }
-        
-        function isDirectVideoLink(url) {
-            return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
-        }
 
-        function getFileNameFromUrl(url) {
-            return url.substring(url.lastIndexOf('/') + 1);
-        }
-
-        function isValidUrl(urlString) {
-            try {
-                new URL(urlString);
-                return true;
-            } catch (_) {
-                return false;
-            }
+        /**
+         * Extracts the YouTube video ID from various URL formats.
+         * @param {string} url - The full YouTube URL.
+         * @returns {string|null} - The 11-character video ID or null if not found.
+         */
+        function getYoutubeVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
         }
     });
     </script>
